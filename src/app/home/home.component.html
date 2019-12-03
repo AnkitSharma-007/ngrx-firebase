@@ -1,0 +1,35 @@
+<h1>Firebase + NgRx</h1>
+<p><strong> This component demonstrates fetching Employee data from cloud firestore using NgRx.</strong></p>
+<p>ngrx/store-devtools is also configured in this app. Install the <a
+        href="https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en"
+        target="_blank ">Redux Dev Tools extension</a> and see
+    the NgRx store
+    in
+    action. </p>
+<hr />
+
+<p *ngIf="loading$ | async"><em>Loading...</em></p>
+
+<table class='table table-striped' *ngIf="empList$ | async as empList">
+    <thead class="thead-dark">
+        <tr>
+            <th>Name</th>
+            <th>Gender</th>
+            <th>Department</th>
+            <th>City</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let emp of empList">
+            <td>{{ emp.name }}</td>
+            <td>{{ emp.gender }}</td>
+            <td>{{ emp.department }}</td>
+            <td>{{ emp.city }}</td>
+            <td>
+                <a [routerLink]="['/employee/edit/', emp.employeeId]">Edit</a> |
+                <a [routerLink]="" (click)="delete(emp.employeeId)">Delete</a>
+            </td>
+        </tr>
+    </tbody>
+</table>
