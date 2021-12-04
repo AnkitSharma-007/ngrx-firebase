@@ -33,7 +33,7 @@ export class EmployeeService {
 
   getAllEmployees(): Observable<Employee[]> {
     const employeeList = this.db
-      .collection<Employee>("Employee")
+      .collection<Employee>("Employee", (ref) => ref.orderBy("name"))
       .snapshotChanges()
       .pipe(
         map((actions) => {

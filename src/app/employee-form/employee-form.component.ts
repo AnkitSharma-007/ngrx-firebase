@@ -1,26 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { Employee } from 'src/models/employee';
-import { City } from 'src/models/city';
-import { ActivatedRoute, Router } from '@angular/router';
-import { EmployeeAppState, CityAppState } from '../state/app.state';
-import { Store, select } from '@ngrx/store';
-import { AddEmployee, EditEmployee, FetchEmployeeByID } from '../state/actions/employee.action';
-import { getCities } from '../state/reducers/city.reducer';
-import { FetchCity } from '../state/actions/city.action';
-import { Observable } from 'rxjs';
-import { getEmployeeByID } from '../state/reducers/employee.reducer';
+import { Component, OnInit } from "@angular/core";
+import { Employee } from "src/models/employee";
+import { City } from "src/models/city";
+import { ActivatedRoute, Router } from "@angular/router";
+import { EmployeeAppState, CityAppState } from "../state/app.state";
+import { Store, select } from "@ngrx/store";
+import {
+  AddEmployee,
+  EditEmployee,
+  FetchEmployeeByID,
+} from "../state/actions/employee.action";
+import { getCities } from "../state/reducers/city.reducer";
+import { FetchCity } from "../state/actions/city.action";
+import { Observable } from "rxjs";
+import { getEmployeeByID } from "../state/reducers/employee.reducer";
 
 @Component({
-  selector: 'app-employee-form',
-  templateUrl: './employee-form.component.html',
-  styleUrls: ['./employee-form.component.css']
+  selector: "app-employee-form",
+  templateUrl: "./employee-form.component.html",
+  styleUrls: ["./employee-form.component.css"],
 })
 export class EmployeeFormComponent implements OnInit {
-
-  title = 'Create';
+  title = "Create";
   employeeId: string;
   errorMessage: any;
-  employee = new Employee();
+  employee: Employee = new Employee();
   cityList$: Observable<City[]>;
   error$: Observable<Error>;
 
@@ -30,8 +33,8 @@ export class EmployeeFormComponent implements OnInit {
     private store: Store<EmployeeAppState>,
     private cityStore: Store<CityAppState>
   ) {
-    if (this.route.snapshot.params['id']) {
-      this.employeeId = this.route.snapshot.paramMap.get('id');
+    if (this.route.snapshot.params["id"]) {
+      this.employeeId = this.route.snapshot.paramMap.get("id");
     }
   }
 
@@ -40,27 +43,30 @@ export class EmployeeFormComponent implements OnInit {
     this.cityList$ = this.cityStore.pipe(select(getCities));
 
     if (this.employeeId) {
-      this.title = 'Edit';
+      this.title = "Edit";
       this.store.dispatch(FetchEmployeeByID({ id: this.employeeId }));
-      this.store.pipe(select(getEmployeeByID)).subscribe(
-        (result: Employee) => {
-          if (result) {
-            this.employee = result;
-          }
+      this.store.pipe(select(getEmployeeByID)).subscribe((result: Employee) => {
+        if (result) {
+          // Doing a deep copy to remove the store reference
+          // Refer - https://stackoverflow.com/a/58279719
+
+          this.employee = JSON.parse(JSON.stringify(result));
         }
-      )
+      });
     }
   }
 
   onEmployeeFormSubmit() {
     if (this.employeeId) {
-      this.store.dispatch(EditEmployee({ id: this.employeeId, employee: this.employee }));
+      this.store.dispatch(
+        EditEmployee({ id: this.employeeId, employee: this.employee })
+      );
     } else {
       this.store.dispatch(AddEmployee({ employee: this.employee }));
     }
   }
 
   cancel() {
-    this.router.navigate(['/']);
+    this.router.navigate(["/"]);
   }
 }
